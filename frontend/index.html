@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LA Crime Map</title>
+</head>
+
+<body>
+  <div id="app">
+    <main>
+      <div class="absolute z-10 top-4 left-1/2 -translate-x-1/2">
+        <div class="font-bold text-3xl bg-gray-800 rounded-lg py-2 px-5">LA Crime Map</div>
+      </div>
+
+      <div class="absolute top-24 left-2.5 z-10" id="floating-panel">
+        <div class="bg-white p-2 shadow-lg rounded-md text-center flex flex-col gap-3">
+          <div class="flex gap-2">
+            <select name="area" id="area" class="bg-gray-800 rounded-md px-2 py-1">
+              <option value="-1">
+                Select an area
+              </option>
+              <option value="1">Central</option>
+              <option value="2">Rampart</option>
+              <option value="3">Southwest</option>
+              <option value="4">Hollenbeck</option>
+              <option value="5">Harbor</option>
+              <option value="6">Hollywood</option>
+              <option value="7">Wilshire</option>
+              <option value="8">West LA</option>
+              <option value="9">Van Nuys</option>
+              <option value="10">West Valley</option>
+              <option value="11">Northeast</option>
+              <option value="12">77th Street</option>
+              <option value="13">Newton</option>
+              <option value="14">Pacific</option>
+              <option value="15">N Hollywood</option>
+              <option value="16">Foothill</option>
+              <option value="17">Devonshire</option>
+              <option value="18">Southeast</option>
+              <option value="19">Mission</option>
+              <option value="20">Olympic</option>
+              <option value="21">Topanga</option>
+            </select>
+            <button class="bg-gray-800 rounded-md px-2 py-1" id="updateBtn">Show Area</button>
+            <button class="bg-red-800 rounded-md px-2 py-1" id="clearBtn">Clear Filters</button>
+          </div>
+
+          <div class="flex gap-2">
+            <input type="time" name="start" id="start" class="bg-gray-800 rounded-md px-2 py-1" />
+            <input type="time" name="end" id="end" class="bg-gray-800 rounded-md px-2 py-1" />
+            <button class="bg-gray-800 rounded-md px-2 py-1" id="updateBtn">Filter times</button>
+          </div>
+
+          <div class="flex gap-2">
+            <button id="createLocModalOpenBtn" class="bg-green-800 rounded-md px-2 py-1">Create Location</button>
+            <a href="" id="otherPageLink" class="bg-gray-800 rounded-md px-2 py-1">Other Operations</a>
+          </div>
+
+          <div class="flex gap-2">
+            <button id="updateLocModalOpenBtn" class="bg-yellow-800 rounded-md px-2 py-1">Update Location</button>
+            <button id="deleteLocModalOpenBtn" class="bg-red-800 rounded-md px-2 py-1">Delete Location</button>
+          </div>
+
+          <div id="area-info" class="text-start text-black">
+          </div>
+        </div>
+      </div>
+      <div id="map" class="h-screen w-screen"></div>
+    </main>
+
+    <div class="z-20 fixed opacity-0 invisible transition-opacity inset-0 bg-gray-100 bg-opacity-50 h-full w-full"
+      id="createLocModal">
+      <div class="absolute z-30 top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 shadow-lg rounded-md bg-white">
+        <button id="createLocModalCloseBtn" class="absolute -right-2 -top-2 bg-gray-800 rounded-full w-7 h-7">✖</button>
+        <div class="p-3">
+          <div class="text-lg font-medium text-black mb-3">Create Location</div>
+          <div class="flex w-full items-center">
+            <div class="flex flex-col gap-2">
+              <input type="number" placeholder="Latitude" name="lat" id="lat"
+                class="bg-gray-800 rounded-md px-2 py-1" />
+              <input type="number" placeholder="Longitude" name="long" id="long"
+                class="bg-gray-800 rounded-md px-2 py-1" />
+              <input type="number" step="1" placeholder="Area Code" name="areaCode" id="areaCode"
+                class="bg-gray-800 rounded-md px-2 py-1" />
+              <button id="createLocBtn" class="bg-green-800 rounded-md px-2 py-1">Create Location</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="z-20 fixed opacity-0 invisible transition-opacity inset-0 bg-gray-100 bg-opacity-50 h-full w-full"
+      id="updateLocModal">
+      <div class="absolute z-30 top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 shadow-lg rounded-md bg-white">
+        <button id="updateLocModalCloseBtn" class="absolute -right-2 -top-2 bg-gray-800 rounded-full w-7 h-7">✖</button>
+        <div class="p-3">
+          <div class="text-lg font-medium text-black mb-3">Update Location</div>
+          <div class="flex w-full items-center">
+            <div class="flex flex-col gap-2">
+              <input type="number" placeholder="Location ID" name="updateLocationId" id="updateLocationId"
+                class="bg-gray-800 rounded-md px-2 py-1" />
+              <input type="number" placeholder="Latitude" name="updateLat" id="updateLat"
+                class="bg-gray-800 rounded-md px-2 py-1" />
+              <input type="number" placeholder="Longitude" name="updateLong" id="updateLong"
+                class="bg-gray-800 rounded-md px-2 py-1" />
+              <input type="number" step="1" placeholder="Area Code" name="updateAreaCode" id="updateAreaCode"
+                class="bg-gray-800 rounded-md px-2 py-1" />
+              <button id="updateLocBtn" class="bg-yellow-800 rounded-md px-2 py-1">Update Location</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="z-20 fixed opacity-0 invisible transition-opacity inset-0 bg-gray-100 bg-opacity-50 h-full w-full"
+      id="deleteLocModal">
+      <div class="absolute z-30 top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 shadow-lg rounded-md bg-white">
+        <button id="deleteLocModalCloseBtn" class="absolute -right-2 -top-2 bg-gray-800 rounded-full w-7 h-7">✖</button>
+        <div class="p-3">
+          <div class="text-lg font-medium text-black mb-3">Delete Location</div>
+          <div class="flex w-full items-center">
+            <div class="flex flex-col gap-2">
+              <input type="number" placeholder="Location ID" name="deleteLocationId" id="deleteLocationId"
+                class="bg-gray-800 rounded-md px-2 py-1" />
+              <button id="deleteLocBtn" class="bg-red-800 rounded-md px-2 py-1">Delete Location</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+  </div>
+</body>
+<script defer type="module" src="/src/main.ts"></script>
+<script>(g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })
+    ({ key: "AIzaSyBQTF8fvuhQezRoFGYnZu5CwjkUV-HCEL0", v: "weekly" });</script>
+
+</html>
